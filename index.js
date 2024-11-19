@@ -1,19 +1,34 @@
+/**
+ * WebSocket client for handling intents and controlling a Matrix device.
+ * 
+ * @requires ws
+ * @requires @matrix-io/matrix-lite
+ * @requires http
+ */
+
 const WebSocket = require("ws");
 const matrix = require("@matrix-io/matrix-lite");
 const https = require("http");
 
-const ws = new WebSocket("ws://localhost:12101/api/events/intent");
-console.log("**Started Web Socket Client**");
-
+/**
+ * Handles WebSocket connection open event.
+ */
 ws.on("open", function open() {
   console.log("\n**Connected**\n");
 });
 
+/**
+ * Handles WebSocket connection close event.
+ */
 ws.on("close", function close() {
   console.log("\n**Disconnected**\n");
 });
 
-// Intents are passed through here
+/**
+ * Handles incoming WebSocket messages (intents).
+ * 
+ * @param {string} data - The incoming message data.
+ */
 ws.on("message", function incoming(data) {
   data = JSON.parse(data);
 
@@ -46,12 +61,22 @@ ws.on("message", function incoming(data) {
   }
 
   if ("Mouvement" === data.intent.name) {
-    mouvement(data.raw_text);
+    mouvement(data.raw_text); //
   };
 
+  if("Humeur" === data.intent.name) {
+    if(data.raw_text.includes("pas")) say("Je vais bien comparé a vous lul");
+    else{
+      say("Je vais bien merci, et vous ?");
+    }
+  }
 });
 
-// Text to speech for string argument
+/**
+ * Sends a text-to-speech request.
+ * 
+ * @param {string} text - The text to be converted to speech.
+ */
 function say(text) {
   const options = {
     hostname: "localhost",
@@ -70,12 +95,17 @@ function say(text) {
   req.end();
 }
 
+/**
+ * Sends a movement request.
+ * 
+ * @param {string} typeMovement - The type of movement to be performed.
+ */
 function mouvement(typeMovement) {
   const options = {
-    hostname : "",
-    port : 0,
-    path : "",
-    methode : ""
+    hostname : "192.168.1.17",
+    port : 80,
+    path : `/${typeMovement}`,
+    methode : "GET"
   };
 
   const req = https.request(options);
@@ -86,9 +116,7 @@ function mouvement(typeMovement) {
 
   req.write();
   req.end();
-
 }
-
 
 /*
 
