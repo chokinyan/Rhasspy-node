@@ -9,6 +9,7 @@
 const WebSocket = require("ws");
 const matrix = require("@matrix-io/matrix-lite");
 const https = require("http");
+const { hostname } = require("os");
 
 const ws = new WebSocket("ws://localhost:12101/api/events/intent");
 
@@ -63,7 +64,7 @@ ws.on("message", function incoming(data) {
   }
 
   if ("Mouvement" === data.intent.name) {
-    mouvement(data.raw_text); //
+    mouvement(data.text); //
   };
 
   if("Humeur" === data.intent.name) {
@@ -107,8 +108,7 @@ function say(text) {
  */
 function mouvement(typeMovement) {
   const options = {
-    hostname : "192.168.1.17",
-    port : 80,
+    hostname : "192.168.1.101",
     path : `/${typeMovement}`,
     methode : "GET"
   };
@@ -119,6 +119,10 @@ function mouvement(typeMovement) {
     console.error(error);
   });
 
-  req.write();
+
+  req.on("response", response => {
+    console.log(response);
+  });
+  
   req.end();
 }
