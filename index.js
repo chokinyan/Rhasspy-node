@@ -10,6 +10,8 @@ const WebSocket = require("ws");
 const matrix = require("@matrix-io/matrix-lite");
 const https = require("http");
 
+const ws = new WebSocket("ws://localhost:12101/api/events/intent");
+
 /**
  * Handles WebSocket connection open event.
  */
@@ -70,6 +72,9 @@ ws.on("message", function incoming(data) {
       say("Je vais bien merci, et vous ?");
     }
   }
+
+
+  
 });
 
 /**
@@ -117,10 +122,3 @@ function mouvement(typeMovement) {
   req.write();
   req.end();
 }
-
-/*
-
-
-
-
-*/
