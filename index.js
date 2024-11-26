@@ -9,7 +9,9 @@
 const WebSocket = require("ws");
 const matrix = require("@matrix-io/matrix-lite");
 const https = require("http");
-const { hostname } = require("os");
+const path = require("path");
+const fs = require("fs");
+const { exec } = require("child_process");
 
 const ws = new WebSocket("ws://localhost:12101/api/events/intent");
 
@@ -74,7 +76,9 @@ ws.on("message", function incoming(data) {
     }
   }
 
-
+  if("jojo" === data.intent.name){
+    playSound(path.join(__dirname, "awaken.wav"));
+  };
   
 });
 
@@ -110,7 +114,7 @@ function mouvement(typeMovement) {
   const options = {
     hostname : "192.168.1.101",
     path : `/${typeMovement}`,
-    methode : "GET"
+    method : "GET"
   };
 
   const req = https.request(options);
@@ -119,10 +123,23 @@ function mouvement(typeMovement) {
     console.error(error);
   });
 
-
   req.on("response", response => {
     console.log(response);
   });
   
   req.end();
+}
+
+function playSound(sound) {
+  exec(`curl -X POST "localhost:12101/api/play-wav" -H "Content-Type: audio/wav" --data-binary @"${sound}"`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`Stderr: ${stderr}`);
+      return;
+    }
+    console.log(`Stdout: ${stdout}`);
+  });
 }
