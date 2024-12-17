@@ -12,6 +12,8 @@ const https = require("http");
 const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
+const ws = require('ws');
+
 
 const ws = new WebSocket("ws://localhost:12101/api/events/intent");
 
@@ -79,6 +81,75 @@ ws.on("message", function incoming(data) {
   if("jojo" === data.intent.name){
     playSound(path.join(__dirname, "awaken.wav"));
   };
+
+  if("rick" === data.intent.name){
+    say("D'accord je vais vous chanté ma chanson préféré").then(() => {
+      playSound(path.join(__dirname, "rick.wav"));
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  };
+
+  if("pays" === data.intent.name){
+    switch(data.text){
+      case "France":
+        say("La France est un pays d'Europe de l'Ouest");
+        break;
+      case "chinois":
+        say("L'Italie est un pays d'Europe du Sud");
+        break;
+      case "état Unis":
+        playSound(path.join(__dirname, "AMERICA.wav"));
+        break;
+      case "Allemagne":
+        say("L'Allemagne est un pays d'Europe centrale");
+        break;
+      case "Angleterre":
+        say("L'Angleterre est un pays d'Europe du Nord-Ouest");
+        break;
+      case "Russie":
+        say("La Russie est un pays d'Europe de l'Est");
+        break;
+      case "Chine":
+        playSound(path.join(__dirname, "chintoc.wav"));
+        break;
+      case "japon":
+        playSound(path.join(__dirname,"arigato.wav"));
+        break;
+      case "Inde":
+        say("L'Inde est un pays d'Asie du Sud");
+        break;
+      case "Australie":
+        say("L'Australie est un pays d'Océanie");
+        break;
+      case "Canada":
+        say("Le Canada est un pays d'Amérique du Nord");
+        break;
+      case "Brésil":
+        say("Le Brésil est un pays d'Amérique du Sud");
+        break;
+      case "États-Unis":
+        say("Les États-Unis sont un pays d'Amérique du Nord");
+        break;
+      default:
+        say("Je ne connais pas ce pays");
+    }
+  }
+  
+  if("youtubeur" == data.intent.name){
+    switch(data.text){
+      case "normann":
+        playSound(path.join(__dirname, "police.wav"));
+        break;
+      case "ze kaille ri":
+        playSound(path.join(__dirname, "police.wav"));
+        break;
+      case "scouizi":
+        playSound(path.join(__dirname, "squizzi.wav"));
+        break;
+    }
+  }
   
 });
 
@@ -87,22 +158,26 @@ ws.on("message", function incoming(data) {
  * 
  * @param {string} text - The text to be converted to speech.
  */
+
 function say(text) {
-  const options = {
-    hostname: "localhost",
-    port: 12101,
-    path: "/api/text-to-speech",
-    method: "POST"
-  };
+  return new Promise((resolve, rejects) => {
+    const options = {
+      hostname: "localhost",
+      port: 12101,
+      path: "/api/text-to-speech",
+      method: "POST"
+    };
 
-  const req = https.request(options);
+    const req = https.request(options);
 
-  req.on("error", error => {
-    console.error(error);
+    req.on("error", error => {
+      rejects(error);
+    });
+
+    req.write(text);
+    req.end();
+    resolve();
   });
-
-  req.write(text);
-  req.end();
 }
 
 /**
