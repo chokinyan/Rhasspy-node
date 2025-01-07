@@ -86,7 +86,29 @@ ws.on("message", function incoming(data) {
   }
 
   if ("Mouvement" === data.intent.name) {
-    mouvement(data.text); //
+    switch(data.text){
+      case "Avancer":
+        mouvement("Avancer"); //
+        break;
+      case "Reculer":
+        mouvement("Reculer"); //
+        break;
+      case "Droite":
+        mouvement("Droite"); //
+        break;
+      case "Gauche":
+        mouvement("Gauche"); //
+        break;
+      case "Stop":
+        mouvement("arreter"); //
+        break;
+      case "Moins vite":
+        mouvement("Moinsvite"); //
+        break;
+      case "Plu vite":
+        mouvement("Plusvite"); //
+        break;
+    }
   };
 
   if("joueur" === data.intent.name) {
@@ -294,7 +316,7 @@ function say(text) {
  */
 function mouvement(typeMovement) {
   const options = {
-    hostname : "192.168.1.101",
+    hostname : "192.168.1.21",
     path : `/${typeMovement}`,
     method : "GET"
   };
