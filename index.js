@@ -13,7 +13,7 @@ const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
 
-const erws = new WebSocket("ws://192.168.1.48:8100");
+const erws = new WebSocket("ws://192.168.1.49:8100");
 const ws = new WebSocket("ws://localhost:12101/api/events/intent");
 
 /**
@@ -43,7 +43,7 @@ ws.on("close", function close() {
  * 
  * @param {string} data - The incoming message data.
  */
-ws.on("message", function incoming(data) {
+ws.on("message", async function incoming(data) {
   data = JSON.parse(data);
 
   console.log("**Captured New Intent**");
@@ -88,25 +88,33 @@ ws.on("message", function incoming(data) {
   if ("Mouvement" === data.intent.name) {
     switch(data.text){
       case "Avancer":
-        mouvement("Avancer"); //
+        await mouvement("Plusvite"); //
+        await mouvement("Avancer"); //
+        await mouvement("arreter");
         break;
       case "Reculer":
-        mouvement("Reculer"); //
+        await mouvement("Plusvite"); //
+        await mouvement("Reculer"); //
+        await mouvement("arreter");
         break;
       case "Droite":
-        mouvement("Droite"); //
+        await mouvement("Plusvite"); //
+        await mouvement("Droite"); //
+        await mouvement("arreter");
         break;
       case "Gauche":
-        mouvement("Gauche"); //
+        await mouvement("Plusvite"); //
+        await mouvement("Gauche"); //
+        await mouvement("arreter");
         break;
       case "Stop":
-        mouvement("arreter"); //
+        await mouvement("arreter"); //
         break;
       case "Moins vite":
-        mouvement("Moinsvite"); //
+        await mouvement("Moinsvite"); //
         break;
       case "Plu vite":
-        mouvement("Plusvite"); //
+        await mouvement("Plusvite"); //
         break;
     }
   };
@@ -315,7 +323,8 @@ function say(text) {
  * @param {string} typeMovement - The type of movement to be performed.
  */
 function mouvement(typeMovement) {
-  const options = {
+  return new Promise((resolve,reject)=>{
+    const options = {
     hostname : "192.168.1.21",
     path : `/${typeMovement}`,
     method : "GET"
@@ -332,7 +341,8 @@ function mouvement(typeMovement) {
   });
   
   req.end();
-}
+  resolve();
+})};
 
 
 function visage(emotion){
