@@ -6,6 +6,7 @@
  * @requires http
  */
 
+const {sleep} = require('./wait.js');
 const WebSocket = require("ws");
 const matrix = require("@matrix-io/matrix-lite");
 const https = require("http");
@@ -52,7 +53,7 @@ ws.on("message", async function incoming(data) {
   if("Saber" === data.intent.name){
     if(data.raw_text.includes("heure")){
       let date = new Date();
-      say(`Il est actuellement ${date.getHours()}:${date.getMinutes()} et ${date.getSeconds()} seconde et ${date.getMilliseconds()} miliSeconde et on est en l'an ${date.getFullYear()} du mois ${date.getMonth()} et enfin du jour ${date.getDay()} meme si on pourrait dire qu'on est a ${date.getTime()} de plus par rapport au premier janvié 1990`);
+      say(`Il est actuellement ${date.getHours()}:${date.getMinutes()} et ${date.getSeconds()} seconde et ${date.getMilliseconds()} miliSeconde et on est en l'an ${date.getFullYear()}`);
     }
     else{
       say("on parle du bts je sais ce que je dois faire");
@@ -87,34 +88,46 @@ ws.on("message", async function incoming(data) {
 
   if ("Mouvement" === data.intent.name) {
     switch(data.text){
-      case "Avancer":
-        await mouvement("Plusvite"); //
-        await mouvement("Avancer"); //
-        await mouvement("arreter");
+      case "Avance":
+        for(let i =0;i<3;i++){
+          mouvement("Plusvite"); //
+        }
+        mouvement("Avancer"); //
+        await sleep(2);
+        mouvement("Arreter");
         break;
-      case "Reculer":
-        await mouvement("Plusvite"); //
-        await mouvement("Reculer"); //
-        await mouvement("arreter");
+      case "Reucule":
+        for(let i =0;i<3;i++){
+          mouvement("Plusvite"); //
+        }
+        mouvement("Reculer"); //
+        await sleep(2);
+        mouvement("Arreter");
         break;
       case "Droite":
-        await mouvement("Plusvite"); //
-        await mouvement("Droite"); //
-        await mouvement("arreter");
+        for(let i =0;i<3;i++){
+          mouvement("Plusvite"); //
+        }
+        mouvement("Droite"); //
+        await sleep(2);
+        mouvement("Arreter");
         break;
       case "Gauche":
-        await mouvement("Plusvite"); //
-        await mouvement("Gauche"); //
-        await mouvement("arreter");
+        for(let i =0;i<3;i++){
+          mouvement("Plusvite"); //
+        }
+        mouvement("Gauche"); //
+        await sleep(2);
+        mouvement("Arreter");
         break;
       case "Stop":
-        await mouvement("arreter"); //
+        mouvement("Arreter"); //
         break;
       case "Moins vite":
-        await mouvement("Moinsvite"); //
+        mouvement("Moinsvite"); //
         break;
       case "Plu vite":
-        await mouvement("Plusvite"); //
+        mouvement("Plusvite"); //
         break;
     }
   };
@@ -206,7 +219,7 @@ ws.on("message", async function incoming(data) {
   if("Amoureux" === data.intent.name){
     switch(data.text){
       case "Tu aimes qui":
-        say("J'aime personne fuck you");
+        say("J'aime bien ce bts, je sais ce queje veux devenir plus fort en informatique");
         break;
       case "Qui est ton proffesseur préféré":
         say("Monsieur Buxeron biensur");
@@ -227,7 +240,7 @@ ws.on("message", async function incoming(data) {
   }
 
   if("mad" === data.intent.name){
-    say("Un nanar, une soupe interstellaire. Je n'ai jamais vu une telle bouillie philosophique et scientifique de pacotille. De la pâté pour chat. Je me suis empressé de revoir 2001 du coup. Toujours aussi hypnotique, intelligent, bouleversant. Rien à voir avec l'indigence du film de Nolan, qui est je le répète un fourre-tout indigeste de bout en bout, un navet boursouflé dégoulinant de bon sentiments");
+    say("Je suis SkyBot");
     visage("Mad");
   }
 
@@ -241,32 +254,32 @@ ws.on("message", async function incoming(data) {
   }
 
   if("Mario" === data.intent.name){
-    say("itz a mii spaguaiti");
+    say("Veux tu jouer avec moi");
     visage("mario.gif");
   }
 
   if("Neutre"=== data.intent.name){
     switch(data.text){
       case "Quelle est la capitale de la France":
-        say("Je sais pas");
+        say("La capitale de la France est Paris");
         break;
       case "Dans quelle école sommes nous":
-        say("Je sais pas");
+        say("Nous sommes au Lycée Louis Armand ");
         break;
       case "Je cherche un film":
-        say("Je sais pas");
+        say("Le film Interstellar est pas mal, je conseille aussi walli");
 
         break;
       case "Je cherche un film [à regarder]":
-      say("Je sais pas");
+      say("Le film Interstellar est pas mal, je conseille aussi walli");
 
       break;
       case "Je cherche un film [à regarder] [tu as des suggestions]":
-        say("Je sais pas");
+        say("Le film Interstellar est pas mal, je conseille aussi walli");
 
         break;
       case "Quel est ton genre":
-        say("rarararar")
+        say("Je suis binaire")
         break;
     }
     visage("Neutre");   
@@ -274,17 +287,17 @@ ws.on("message", async function incoming(data) {
 
 
   if("Rire" === data.intent.name){
-    say("Qui est gay Adem AAAAAAAAAAAAAAAAA");
+    say("Qu'est-ce qui est jaune et qui attends ? Jaune attends");
     visage("Rire");
   }
 
   if("vide" === data.intent.name){
-    say("Je prefere regarde 50 nuance de gris");
+    say("J'adore le film du SkyBot");
     visage("Vide");
   }
 
   if("WhatTheSigma" === data.intent.name){
-    say("Ligmaballs");
+    say("");
     visage("WhatTheSigma")
   }
 
@@ -323,7 +336,6 @@ function say(text) {
  * @param {string} typeMovement - The type of movement to be performed.
  */
 function mouvement(typeMovement) {
-  return new Promise((resolve,reject)=>{
     const options = {
     hostname : "192.168.1.21",
     path : `/${typeMovement}`,
@@ -341,8 +353,7 @@ function mouvement(typeMovement) {
   });
   
   req.end();
-  resolve();
-})};
+};
 
 
 function visage(emotion){
